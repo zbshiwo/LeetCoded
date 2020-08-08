@@ -3,6 +3,9 @@ package com.zb.linkedlist;
 import com.zb.base.IssueId;
 import com.zb.base.ListNode;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  */
@@ -177,6 +180,25 @@ public class LinkedList {
         return a;
     }
 
+    /**
+     * Given a linked list, swap every two adjacent node and return its head.<br/>
+     * You may not modify the values in the list's nodes, only nodes itself may be changed.<br/>
+     * 给定一个链表，每两个相邻节点交换一次，返回链表的头。<br/>
+     * 不能修改链表节点中的值，只能修改节点本身<br/>
+     * Example:<br/>
+     * <pre>1 -> 2 -> 3 -> 4        =>         2 -> 1 -> 4 -> 3</pre>
+     */
+    @IssueId("https://leetcode.com/problems/swap-nodes-in-pairs/")
+    public static ListNode swapPairs(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode next = head.next;
+        head.next = swapPairs(next.next);
+        next.next = head;
+        return next;
+    }
+
     // Medium
 
     /**
@@ -222,5 +244,68 @@ public class LinkedList {
             odd.next = evenHead;
         }
         return head;
+    }
+
+    /**
+     * Given a linked list, remove the n-th node from the end of list and return its head
+     * 给定一个链表，从末尾删除第 n 个节点并返回头部
+     */
+    @IssueId("https://leetcode.com/problems/remove-nth-node-from-end-of-list/")
+    public static ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode start = new ListNode();
+        ListNode quick = start, slow = start;
+        start.next = head;
+
+        while (n > 0 && quick != null) {
+            quick = quick.next;
+            n--;
+        }
+        while (quick != null && quick.next != null) {
+            slow = slow.next;
+            quick = quick.next;
+        }
+        slow.next = slow.next.next;
+        return start.next;
+    }
+
+    /**
+     * Given a sorted linked list, delete all nodes that have duplicate numbers. leaving only distinct numbers from the original list.
+     * 给定一个排序链表，删除所有有重复数字的节点，只保留原始链表中不同的数字
+     * @see com.zb.linkedlist.LinkedList#deleteDuplicates(ListNode)
+     */
+    @IssueId("https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/")
+    public static ListNode deleteDuplicates2(ListNode head) {
+        return null;
+    }
+
+    /**
+     * Given the {@code head} of a linked list, we repeatedly delete consecutive sequences of nodes that sum to 0 util there are no such sequences.
+     * After doing so, return the head of the final linked list.
+     * 给定一个链表的 {@code head} 节点，反复删除求和为 0 的节点序列，直到没有此类序列为止。
+     */
+    @IssueId("https://leetcode.com/problems/remove-zero-sum-consecutive-nodes-from-linked-list/")
+    public static ListNode removeZeroSumSublists(ListNode head) {
+        ListNode dummy = new ListNode(0), cur = dummy;
+        Map<Integer, ListNode> map = new HashMap<>();
+        dummy.next = head;
+        int temp = 0;
+        while (cur != null) {
+            temp += cur.val;
+            if (map.containsKey(temp)) {
+                // remove unneeded map entry
+                cur = map.get(temp).next;
+                int p = temp + cur.val;
+                while (p != temp) {
+                    map.remove(p);
+                    cur = cur.next;
+                    p += cur.val;
+                }
+                map.get(temp).next = cur.next;
+            } else {
+                map.put(temp, cur);
+            }
+            cur = cur.next;
+        }
+        return dummy.next;
     }
 }
