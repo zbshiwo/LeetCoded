@@ -232,7 +232,7 @@ public class LinkedList {
     }
 
     @IssueId("https://leetcode.com/problems/odd-even-linked-list/")
-    public ListNode oddEvenList(ListNode head) {
+    public static ListNode oddEvenList(ListNode head) {
         if (head != null) {
             ListNode odd = head, even = head.next, evenHead = even;
             while (even != null && even.next != null) {
@@ -279,9 +279,12 @@ public class LinkedList {
     }
 
     /**
-     * Given the {@code head} of a linked list, we repeatedly delete consecutive sequences of nodes that sum to 0 util there are no such sequences.
-     * After doing so, return the head of the final linked list.
-     * 给定一个链表的 {@code head} 节点，反复删除求和为 0 的节点序列，直到没有此类序列为止。
+     * Given the {@code head} of a linked list,<br/>
+     * we repeatedly delete consecutive sequences of nodes that sum to 0 util there are no such sequences.<br/>
+     * After doing so, return the {@code head} of the final linked list.<br/>
+     * <br/>
+     * 给定一个链表的 {@code head} 节点，反复删除求和为 0 的节点序列，直到没有此类序列为止。<br/>
+     * 这样做之后，返回最终链表的 {@code head}
      */
     @IssueId("https://leetcode.com/problems/remove-zero-sum-consecutive-nodes-from-linked-list/")
     public static ListNode removeZeroSumSublists(ListNode head) {
@@ -307,5 +310,136 @@ public class LinkedList {
             cur = cur.next;
         }
         return dummy.next;
+    }
+
+    /**
+     * Given a singly linked list.
+     * <pre>L: L0 -> L1  ->  ... -> Ln-1 -> Ln</pre>
+     * Reorder it to
+     * <pre>L: L0 -> Ln  ->  L1 -> Ln-1 -> L2 -> Ln-2 -> ...</pre>
+     * You may not modify the values in the list's nodes. onlt nodes itself may be changed.<br/>
+     * <br/>
+     * 给定一个单链表。
+     * <pre>L: L0 -> L1  ->  ... -> Ln-1 -> Ln</pre>
+     * 重排序后为
+     * <pre>L: L0 -> Ln  ->  L1 -> Ln-1 -> L2 -> Ln-2 -> ...</pre>
+     * 不能修改链表节点中的值，只能修改节点本身<br/>
+     *
+     * @see LinkedList#middleNode(com.zb.base.ListNode)
+     * @see LinkedList#reverseList(com.zb.base.ListNode)
+     */
+    @IssueId("https://leetcode.com/problems/reorder-list/")
+    public static void reorderList(ListNode head) {
+        if (head == null) {
+            return;
+        }
+        // use the fast slow pointer to find the middle node, if there are two middle nodes, return the first middle node
+        ListNode fast = head, slow = head;
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        // reverse form the middle node
+        ListNode cur = slow.next, newHead = null;
+        while (cur != null) {
+            ListNode temp = cur.next;
+            cur.next = newHead;
+            newHead = cur;
+            cur = temp;
+        }
+        slow.next = null;
+        // start reorder
+        ListNode p = head, q = newHead;
+        while (q != null) {
+            ListNode pNext = p.next, qNext = q.next;
+            p.next = q;
+            q.next = pNext;
+            p = p.next.next;
+            q = qNext;
+        }
+    }
+
+    /**
+     * Given a linked list, rotate the list to the right by {@code k} places, where k is non-negative.<br/>
+     * 提供一个链表，将列表向右旋转k个位置，其中k为非负数。<br/>
+     * <pre>
+     * Input: 0->1->2->NULL, k = 4
+     * Output: 2->0->1->NULL
+     * Explanation:
+     * rotate 1 steps to the right: 2->0->1->NULL
+     * rotate 2 steps to the right: 1->2->0->NULL
+     * rotate 3 steps to the right: 0->1->2->NULL
+     * rotate 4 steps to the right: 2->0->1->NULL
+     * </pre>
+     * @see LinkedList#removeNthFromEnd(com.zb.base.ListNode, int)
+     */
+    @IssueId("https://leetcode.com/problems/rotate-list/")
+    public static ListNode rotateRight(ListNode head, int k) {
+        if (head == null || k == 0) {
+            return head;
+        }
+        ListNode quick = head, slow = head;
+        while (k > 0) {
+            quick = quick.next;
+            if (quick == null) {
+                quick = head;
+            }
+            k--;
+        }
+        while (quick.next != null) {
+            quick = quick.next;
+            slow = slow.next;
+        }
+        if (slow.next == null) {
+            return head;
+        }
+        ListNode newHead = slow.next, cur = newHead;
+        slow.next = null;
+        while (cur.next != null) {
+            cur = cur.next;
+        }
+        cur.next = head;
+        return newHead;
+    }
+
+    /**
+     * Given a singly linked list with head node {@code head}. </br>
+     * write a function to split the linked list into {@code k} consecutive linked list "parts".<br/>
+     * The length of each part should ne as equal as possible, no two parts should have a size differing by more than 1.</br>
+     * This may lead to some parts being null. <br/>
+     * The parts should be in order of occurrence in the input list </br>
+     * and parts occurring earlier should always have a size greater than or equal parts occurring later.<br/>
+     * Return a list of ListNode's representing the linked list parts that are formed.<br/>
+     * <br/>
+     * 给定一个带有头结点的链表 {@code head}, 编写一个函数将链表拆分为 {@code k} 个连续的链表部分 <br/>
+     * 每个部分的长度尽可能相等，两个部分的大小之差不得超过1。这可能导致某些部分为空。<br/>
+     * 每个几点应该按照输入列表中的顺序排序，并且中较早出现的部分的长度应该大于或等于较晚出现的比大小。<br/>
+     * 返回表示所形成的链接列表部分的 {@code ListNode} 的 List。
+     * <pre>
+     * Input:
+     * root = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], k = 3
+     * Output: [[1, 2, 3, 4], [5, 6, 7], [8, 9, 10]]
+     * </pre>
+     */
+    @IssueId("https://leetcode.com/problems/split-linked-list-in-parts/")
+    public static ListNode[] splitListToParts(ListNode head, int k) {
+        ListNode[] result = new ListNode[k];
+        int length = 0;
+        ListNode node = head;
+        while (node != null) {
+            node = node.next;
+            length++;
+        }
+        ListNode temp = head, prev = null;
+        int n = length / k, r = length % k;
+        for (int i = 0; i < result.length && temp != null; i++, r--) {
+            result[i] = temp;
+            for (int j = 0; j < n + (r > 0 ? 1 : 0); j++) {
+                prev = temp;
+                temp = temp.next;
+            }
+            prev.next = null;
+        }
+        return result;
     }
 }
