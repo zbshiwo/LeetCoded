@@ -64,34 +64,88 @@ public class LinkedList {
     }
 
     /**
-     * Given a linked list, determine if it has a cycle in it.
+     * Given a linked list, determine if it has a cycle in it.<br/>
+     * <br/>
+     * 给定一个链表，判断其中是否有一个环。<br/>
      * @return whether the linked list has cycle
      * @see LinkedList#getEnterListNode(com.zb.base.ListNode)
      * @see LinkedList#getCycleLength(com.zb.base.ListNode)
      */
     @IssueId("https://leetcode.com/problems/linked-list-cycle/")
     public static boolean hasCycle(ListNode head) {
-        return true;
+        ListNode fast = head, slow = head;
+        while (fast != null && fast.next != null) {
+            fast = fast.next.next;
+            slow = slow.next;
+            if (fast == slow) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
-     *
-     * @param head
-     * @return
+     * Given a linked list. return the node where the cycle begins. If there is no cycle, return {@code null}. <br/>
+     * <br/>
+     * 给定一个链表，如果链表中不含有环，返回 {@code null}，不然返回环的开始节点。 <br/>
+     * <pre>
+     *             9 - 8 - 7
+     *             |       |
+     * 1 - 2 - 3 - 4 - 5 - 6
+     * Explanation: There is a cycle in the linked list and the node where the cycle begins is the fourth.
+     * </pre>
+     * <h3>Solution: </h2>
+     * 假设链表头结点到环的开始节点的长度为 {@code x}, 环的开始节点到快慢指针相等的节点的长度是 {@code y}，快慢指针相等的节点到环的开始节点的长度为 {@code z}，<br/>
+     * 环的长度为 {@code L}, 快指针等于慢指针时，快指针循环了 {@code n} 圈环，则：
+     * <pre>
+     *              2 (x + y) = x + y + n (y + z)
+     *              x + y = ny + nz
+     *              x = (n - 1)y + nz
+     *     because: L = y + z
+     *     so:      x = (n - 1)L + z;
+     * </pre>
+     * 所以将快指针重新移到头部，继续和慢指针向后遍历，快慢指针相等时指的就是环的开始节点。
      * @see LinkedList#hasCycle(com.zb.base.ListNode)
      */
     public static ListNode getEnterListNode(ListNode head) {
+        ListNode fast = head, slow = head;
+        while (fast != null && fast.next != null) {
+            fast = fast.next.next;
+            slow = slow.next;
+            if (fast == slow) {
+                fast = head;
+                while (fast != slow) {
+                    fast = fast.next;
+                    slow = slow.next;
+                }
+                return fast;
+            }
+        }
         return null;
     }
 
     /**
-     *
-     * @param head
-     * @return
+     * Given a linked list. return the length of the cycle. If there is no cycle, return 0.<br/>
+     * <br/>
+     * 给定一个链表，如果链表里面没有环，返回 0，不然就返回环的长度。
+     * @see LinkedList#getEnterListNode(com.zb.base.ListNode)
      * @see LinkedList#hasCycle(com.zb.base.ListNode)
      */
     public static int getCycleLength(ListNode head) {
-        return 0;
+        ListNode fast = head, slow = head;
+        int result = 0;
+        while (fast != null && fast.next != null) {
+            fast = fast.next.next;
+            slow = slow.next;
+            if (fast == slow) {
+                fast = fast.next;
+                while (fast != slow) {
+                    result++;
+                }
+                return result + 1;
+            }
+        }
+        return result;
     }
 
     /**
@@ -208,7 +262,7 @@ public class LinkedList {
      * @return [7 -> 0 -> 8]
      */
     @IssueId("https://leetcode.com/problems/add-two-numbers/")
-    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+    public static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
         int temp = 0;
         ListNode head = new ListNode();
         ListNode p = head;
